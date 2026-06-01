@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tuba's Glasses — Sign Language to Voice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#080810;--panel:#0f0f1a;--border:#1e1e30;
+  --green:#3cdc3c;--yellow:#ffdc50;--blue:#1ea0ff;
+  --white:#f0f0f8;--muted:#556;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--white);font-family:'Syne',sans-serif;
+  overflow-x:hidden;line-height:1.6;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;padding:60px 24px;position:relative;overflow:hidden;}
+
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(30,160,255,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(30,160,255,0.04) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+.hero-glow{
+  position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(60,220,60,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#111118;border:1px solid var(--border);
+  border-radius:20px;padding:6px 16px;font-size:12px;
+  font-family:'Space Mono',monospace;color:#888;
+  margin-bottom:28px;
+}
+.badge-dot{width:7px;height:7px;border-radius:50%;
+  background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+h1{font-size:clamp(42px,8vw,88px);font-weight:800;line-height:1.0;
+  letter-spacing:-2px;margin-bottom:20px;}
+h1 span{color:var(--green);}
+
+.subtitle{font-size:clamp(14px,2vw,18px);color:#888;max-width:540px;
+  margin:0 auto 40px;line-height:1.7;}
+
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:60px;}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 24px;border-radius:8px;font-size:14px;
+  font-family:'Space Mono',monospace;font-weight:700;
+  text-decoration:none;cursor:pointer;transition:all 0.15s;
+}
+.btn-primary{background:var(--green);color:#000;}
+.btn-primary:hover{background:#50ff50;transform:translateY(-1px);}
+.btn-secondary{background:transparent;color:var(--white);
+  border:1px solid var(--border);}
+.btn-secondary:hover{border-color:#555;background:#111118;}
+
+.tech-row{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+}
+.tech-pill{
+  background:#111118;border:1px solid var(--border);
+  border-radius:6px;padding:5px 12px;
+  font-family:'Space Mono',monospace;font-size:11px;color:#aaa;
+}
+
+/* SECTION */
+section{max-width:960px;margin:0 auto;padding:80px 24px;}
+h2{font-size:clamp(24px,4vw,36px);font-weight:800;margin-bottom:40px;
+  letter-spacing:-1px;}
+h2 em{font-style:normal;color:var(--green);}
+
+/* ARCHITECTURE */
+.arch{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;padding:32px;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.arch-node{
+  background:#0a0a14;border:1px solid var(--border);
+  border-radius:8px;padding:12px 28px;
+  font-family:'Space Mono',monospace;font-size:13px;
+  color:var(--white);text-align:center;min-width:260px;
+}
+.arch-node.highlight{border-color:var(--green);color:var(--green);}
+.arch-arrow{
+  color:var(--muted);font-size:20px;line-height:1;margin:4px 0;
+}
+.arch-split{
+  display:flex;gap:16px;align-items:center;justify-content:center;
+  flex-wrap:wrap;
+}
+.arch-split .arch-node{min-width:160px;}
+.arch-plus{color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;}
+
+/* SIGNS */
+.sign-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:12px;
+}
+.sign-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:8px;padding:14px;text-align:center;
+}
+.sign-icon{font-size:28px;margin-bottom:6px;}
+.sign-label{
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:var(--muted);margin-bottom:4px;
+}
+.sign-word{font-size:14px;font-weight:800;color:var(--white);}
+.sign-card.special{border-color:var(--green);}
+.sign-card.special .sign-word{color:var(--green);}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.feat-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:10px;padding:20px;
+}
+.feat-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:#1a1a28;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-bottom:12px;
+}
+.feat-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+.feat-desc{font-size:12px;color:#666;line-height:1.6;
+  font-family:'Space Mono',monospace;}
+
+/* DEPLOY */
+.deploy-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:600px){.deploy-grid{grid-template-columns:1fr;}}
+.deploy-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:10px;padding:20px;
+}
+.deploy-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.deploy-dot{width:10px;height:10px;border-radius:50%;}
+.deploy-title{font-size:14px;font-weight:700;}
+.deploy-steps{
+  font-family:'Space Mono',monospace;font-size:11px;
+  color:#888;line-height:2;
+}
+.deploy-steps b{color:var(--white);}
+
+/* RESUME */
+.resume-box{
+  background:var(--panel);border:1px solid var(--green);
+  border-radius:10px;padding:24px;
+}
+.resume-box h3{font-size:12px;font-family:'Space Mono',monospace;
+  color:var(--green);letter-spacing:2px;margin-bottom:16px;}
+.resume-item{
+  font-family:'Space Mono',monospace;font-size:12px;
+  color:#aaa;line-height:1.9;padding-left:16px;position:relative;
+}
+.resume-item::before{content:"•";position:absolute;left:0;color:var(--green);}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);text-align:center;
+  padding:32px 24px;
+  font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);
+}
+footer a{color:#888;text-decoration:none;}
+footer a:hover{color:var(--white);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="badge">
+    <span class="badge-dot"></span>
+    LIVE DEMO AVAILABLE
+  </div>
+
+  <h1>Tuba's<br/><span>Glasses</span></h1>
+  <p class="subtitle">
+    Real-time sign language interpreter.<br/>
+    Hand gestures → AI sentences → spoken voice.
+  </p>
+
+  <div class="cta-row">
+    <a href="#" class="btn btn-primary" id="demo-btn">▶ Live Demo</a>
+    <a href="https://github.com" class="btn btn-secondary" id="github-btn">⌥ GitHub</a>
+  </div>
+
+  <div class="tech-row">
+    <span class="tech-pill">React</span>
+    <span class="tech-pill">FastAPI</span>
+    <span class="tech-pill">MediaPipe</span>
+    <span class="tech-pill">DeepFace</span>
+    <span class="tech-pill">Gemini 2.5 Flash</span>
+    <span class="tech-pill">Vercel</span>
+    <span class="tech-pill">Render</span>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<section>
+  <h2>How it <em>works</em></h2>
+  <div class="arch">
+    <div class="arch-node highlight">🎥 User Webcam (browser)</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">React + Vite Frontend</div>
+    <div class="arch-arrow">↓ POST /analyze (200ms)</div>
+    <div class="arch-node">FastAPI Backend · Render</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-split">
+      <div class="arch-node">🖐 MediaPipe<br/>Hand Tracking</div>
+      <div class="arch-plus">+</div>
+      <div class="arch-node">😐 DeepFace<br/>Emotion Detection</div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node">Gemini 2.5 Flash API<br/>(gloss → natural sentence)</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node highlight">🔊 Browser Speech Synthesis</div>
+  </div>
+</section>
+
+<!-- SIGN DICTIONARY -->
+<section>
+  <h2>Sign <em>dictionary</em></h2>
+  <div class="sign-grid">
+    <div class="sign-card"><div class="sign-icon">🖐</div><div class="sign-label">Open hand</div><div class="sign-word">TECHNOLOGY</div></div>
+    <div class="sign-card"><div class="sign-icon">✌️</div><div class="sign-label">Peace V</div><div class="sign-word">USE</div></div>
+    <div class="sign-card"><div class="sign-icon">☝️</div><div class="sign-label">Point index</div><div class="sign-word">FOR</div></div>
+    <div class="sign-card"><div class="sign-icon">👍</div><div class="sign-label">Thumbs up</div><div class="sign-word">HELP</div></div>
+    <div class="sign-card"><div class="sign-icon">🤘</div><div class="sign-label">Index + pinky</div><div class="sign-word">NOT</div></div>
+    <div class="sign-card"><div class="sign-icon">✊</div><div class="sign-label">Fist</div><div class="sign-word">WAR</div></div>
+    <div class="sign-card"><div class="sign-icon">🤟</div><div class="sign-label">Love sign</div><div class="sign-word">LOVE</div></div>
+    <div class="sign-card"><div class="sign-icon">👌</div><div class="sign-label">OK gesture</div><div class="sign-word">AI</div></div>
+    <div class="sign-card special"><div class="sign-icon">🙌</div><div class="sign-label">Both hands open</div><div class="sign-word">FINISH →🔊</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section>
+  <h2>Features</h2>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🖐</div>
+      <div class="feat-title">Hand Tracking</div>
+      <div class="feat-desc">21-point MediaPipe landmark detection. Hold 1.5s to lock a sign.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">😐</div>
+      <div class="feat-title">Emotion Detection</div>
+      <div class="feat-desc">DeepFace analyzes 6 emotions in real-time: Happy, Sad, Angry, Neutral…</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🤖</div>
+      <div class="feat-title">AI Interpretation</div>
+      <div class="feat-desc">Gemini 2.5 Flash converts sign-language gloss to natural English sentences.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔊</div>
+      <div class="feat-title">Voice Output</div>
+      <div class="feat-desc">Browser Speech API reads each locked word and the final sentence aloud.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">Real-time Pipeline</div>
+      <div class="feat-desc">5 FPS inference loop with async state machine for smooth UX.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🚀</div>
+      <div class="feat-title">Fully Hosted</div>
+      <div class="feat-desc">Frontend on Vercel. Backend on Render. Zero DevOps for viewers.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPLOYMENT -->
+<section>
+  <h2>Deploy <em>in minutes</em></h2>
+  <div class="deploy-grid">
+    <div class="deploy-card">
+      <div class="deploy-head">
+        <div class="deploy-dot" style="background:#fff;"></div>
+        <div class="deploy-title">Backend → Render</div>
+      </div>
+      <div class="deploy-steps">
+        1. Push <b>backend/</b> to GitHub<br/>
+        2. New Web Service on Render<br/>
+        3. Build: <b>pip install -r requirements.txt</b><br/>
+        4. Start: <b>uvicorn main:app …</b><br/>
+        5. Set <b>GEMINI_API_KEY</b> env var<br/>
+        6. Copy your <b>.onrender.com</b> URL
+      </div>
+    </div>
+    <div class="deploy-card">
+      <div class="deploy-head">
+        <div class="deploy-dot" style="background:#000;"></div>
+        <div class="deploy-title">Frontend → Vercel</div>
+      </div>
+      <div class="deploy-steps">
+        1. Push <b>frontend/</b> to GitHub<br/>
+        2. Import project on Vercel<br/>
+        3. Root directory = <b>frontend</b><br/>
+        4. Set <b>VITE_API_URL</b> = Render URL<br/>
+        5. Deploy → get <b>.vercel.app</b> URL<br/>
+        6. Add to your resume 🎉
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESUME -->
+<section>
+  <h2>Resume <em>bullets</em></h2>
+  <div class="resume-box">
+    <h3>// COPY & PASTE</h3>
+    <div class="resume-item">Built real-time sign language interpreter web app using MediaPipe (hand tracking), DeepFace (emotion analysis), and Gemini 2.5 Flash (NLU) via React + FastAPI</div>
+    <div class="resume-item" style="margin-top:10px;">Deployed full-stack application on Vercel (frontend) and Render (backend) with live webcam inference pipeline running at 5 FPS</div>
+    <div class="resume-item" style="margin-top:10px;">Implemented gesture state machine (hold-to-lock, dual-hand FINISH trigger) translating sign-language gloss words to natural speech via Web Speech API</div>
+  </div>
+</section>
+
+<footer>
+  <p>Tuba's Glasses &nbsp;·&nbsp; 
+    <a href="#">Live Demo</a> &nbsp;·&nbsp; 
+    <a href="https://github.com">GitHub</a> &nbsp;·&nbsp;
+    Built with MediaPipe · DeepFace · Gemini · React · FastAPI
+  </p>
+</footer>
+
+<script>
+document.getElementById('demo-btn').addEventListener('click', function(e){
+  e.preventDefault();
+  alert('🚀 Update this link with your Vercel URL after deployment!\n\nSee README.md for deployment steps.');
+});
+document.getElementById('github-btn').addEventListener('click', function(e){
+  e.preventDefault();
+  alert('📦 Update this link with your GitHub repo URL!');
+});
+</script>
+</body>
+</html>
