@@ -62,13 +62,34 @@ export default function Webcam({ onFrame, faceBox, numHands }) {
     ctx.strokeRect(x1 * scaleX, y1 * scaleY,
                    (x2 - x1) * scaleX, (y2 - y1) * scaleY);
   }, [faceBox]);
-
   return (
-    <div className="webcam-wrap">
-      <video ref={videoRef} autoPlay playsInline muted className="webcam-video" />
-      <canvas ref={canvasRef} style={{ display: "none" }} />
-      <canvas ref={overlayRef} className="webcam-overlay" width={640} height={360} />
-      <div className="hand-badge">{numHands > 0 ? `${numHands} hand${numHands > 1 ? "s" : ""}` : "no hands"}</div>
+  <div className="webcam-wrap" style={{ position: "relative", width: "100%", maxWidth: "640px" }}>
+    {/* Explicitly mirrored via CSS inline styles if class doesn't handle it */}
+    <video 
+      ref={videoRef} 
+      autoPlay 
+      playsInline 
+      muted 
+      className="webcam-video" 
+      style={{ width: "100%", height: "auto", display: "block", transform: "scaleX(-1)" }}
+    />
+    <canvas ref={canvasRef} style={{ display: "none" }} />
+    <canvas 
+      ref={overlayRef} 
+      className="webcam-overlay" 
+      width={640} 
+      height={360} 
+      style={{ 
+        position: "absolute", 
+        top: 0, 
+        left: 0, 
+        width: "100%", 
+        height: "100%", 
+        pointerEvents: "none" // Ensures clicks pass straight through to the video if needed
+      }} 
+    />
+    <div className="hand-badge" style={{ position: "absolute", bottom: "10px", right: "10px", zIndex: 10 }}>
+      {numHands > 0 ? `${numHands} hand${numHands > 1 ? 's' : ''}` : "no hands"}
     </div>
-  );
-}
+  </div>
+);
